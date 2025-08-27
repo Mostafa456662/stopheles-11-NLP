@@ -1,4 +1,6 @@
-graph TD
+```mermaid
+
+graph architecture
 
     A[CLI Input] --> B[Command Parser]
     B --> ZZ[Language Model]
