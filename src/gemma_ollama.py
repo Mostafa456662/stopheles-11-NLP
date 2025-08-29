@@ -1,7 +1,7 @@
 import ollama
 
 # Define the model and conversation
-model_id = ''
+model_id = 'gemma:2b'
 messages = [
     
     {

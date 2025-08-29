@@ -1,17 +1,18 @@
 import torch
 import dotenv
-
+import os
 from transformers import pipeline
 from huggingface_hub import login
 
+# Load environment variables from .env file
+dotenv.load_dotenv()
 
-
-hf_token = "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"  
+# Get Hugging Face token from environment variable
+hf_token = os.getenv("hugging_face_token")
 login(hf_token)
 
-# Define the model ID
-model_id = ""
 
+model_id = "google/gemma-2b-it"
 
 pipe = pipeline(
     "text-generation",
@@ -20,9 +21,8 @@ pipe = pipeline(
     device_map="auto",
 )
 
-
 messages = [
-        {"role": "user", "content": "Hi"},
+    {"role": "user", "content": "Hi"},
 ]
 
 # Generate the response

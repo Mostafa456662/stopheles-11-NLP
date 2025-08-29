@@ -1,4 +1,9 @@
+
+
+```mermaid
+
 graph TD
+
     A[CLI Input] --> B[Command Parser]
     B --> ZZ[Language Model]
     ZZ --> C{Task Selection}
