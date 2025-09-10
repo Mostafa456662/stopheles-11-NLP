@@ -1,5 +1,5 @@
 import ollama
-from gemma import generate
+from tasks.gemma import generate
 import os
 from dotenv import load_dotenv
 import json

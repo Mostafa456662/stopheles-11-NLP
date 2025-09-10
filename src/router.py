@@ -1,23 +1,23 @@
 import json
 import os
 from typing import Dict, Any
-from gemma import generate
-from tasks.summarise import summarise_paper
+from tasks.gemma import generate
 from tasks.explain import explain
-from tasks.classify import classify_paper
+from tasks.classify import classify
+from tasks.summarise import summarise_paper
 
 
 function_implementations = {
     "summarise_paper": summarise_paper,
     "explain": explain,
-    "classify_paper": classify_paper,
+    "classify": classify,
 }
 
 
 available_functions = {
     "summarise_paper": {
         "description": "summarise a machine learning paper",
-        "parameters": {"paper_path": "string - path to the paper file"},
+        "parameters": {"paper_path": "string - path to the paper file", "folder_path":"path to the folder which contains the folders of papers to be classified into"},
     },
     "explain": {
         "description": "Search for and explain a ML concept across papers",
@@ -25,9 +25,9 @@ available_functions = {
             "query": "the query requesting explanation for a certain topic or passage"
         },
     },
-    "classify_paper": {
+    "classify": {
         "description": "Classify a paper into appropriate folders",
-        "parameters": {"paper_path": "string - path to the paper to classify"},
+        "parameters": {"new_paper_path": "string - path to the paper to classify"},
     },
 }
 
@@ -92,14 +92,14 @@ def select_and_call_function(user_input: str) -> str:
         selected_function = function_implementations[function_name]
 
         if function_name == "summarise_paper":
-            print("summarise_pape")
+            print("summarise_paper")
             result = selected_function(paper_path=parameters.get("paper_path", ""))
         elif function_name == "explain":
             print("explain")
             result = selected_function(query=parameters.get("query", ""))
-        elif function_name == "classify_paper":
+        elif function_name == "classify":
             print("classify")
-            result = selected_function(paper_path=parameters.get("paper_path", ""))
+            result = selected_function(new_paper_path=parameters.get("new_paper_path", ""))
         else:
             result = selected_function(**parameters)
 
@@ -114,13 +114,11 @@ def select_and_call_function(user_input: str) -> str:
 if __name__ == "__main__":
     # Test the function selector
     test_inputs = [
-        "Can you summarise the paper at /path/to/paper.pdf?",
-        "Explain what is a transformer model",
-        "Classify the paper located at /papers/new_research.txt",
+        "Can you classify the paper at doc\papers\Fine_Tune_LViT_for_zero_shot_classifiction[1].pdf",
     ]
 
     for user_input in test_inputs:
         print(f"\nUser: {user_input}")
         result = select_and_call_function(user_input)
-        print(f"Assistant: {result}")
+        
         print("-" * 50)
