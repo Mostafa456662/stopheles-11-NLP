@@ -14,10 +14,10 @@ dotenv.load_dotenv()
 
 
 FOLDER_PATH = os.getenv("FOLDER_PATH")
-
-
+DBS_PATH = os.getenv("DBS_PATH")
+PAPERS_PATH = os.getenv("PAPERS_PATH")
 EMBEDDING_MODEL = "nomic-embed-text"
-SIMILARITY_THRESHOLD = float(os.getenv("similarity_threshold"))
+SIMILARITY_THRESHOLD = float(os.getenv("SIMILARITY_THRESHOLD"))
 
 
 def extract_text(file_path: str, max_chars: int = 2048) -> str:
@@ -208,8 +208,9 @@ def organize_paper(
         return None
 
 
-def save_embeddings_cache(embeddings_dict, cache_path="embeddings_cache"):
+def save_embeddings_cache(embeddings_dict, cache_path):
     """Save embeddings dictionary to NPZ and JSON files"""
+
     # Prepare data for NPZ (embeddings only)
     embeddings_data = {}
     metadata = {}
@@ -241,7 +242,7 @@ def save_embeddings_cache(embeddings_dict, cache_path="embeddings_cache"):
     )
 
 
-def load_embeddings_cache(cache_path="embeddings_cache"):
+def load_embeddings_cache(cache_path):
     """Load embeddings dictionary from NPZ and JSON files"""
     try:
         # Load embeddings
@@ -285,17 +286,19 @@ def load_embeddings_cache(cache_path="embeddings_cache"):
 
 
 def classify(
-    new_paper_path,
-    extract_text = extract_text,
-    root_folder = FOLDER_PATH,
+    new_paper,
+    extract_text=extract_text,
+    root_folder=FOLDER_PATH,
     threshold=SIMILARITY_THRESHOLD,
     use_cache=False,
 ):
     """Main function to organize papers"""
-    cache_path = os.path.join(root_folder, "embeddings_cache")
+    cache_path = os.path.join(DBS_PATH, "embeddings_cache")
 
+    new_paper_path = PAPERS_PATH + new_paper
     # Load or create embeddings dictionary
-    if use_cache and os.path.exists(cache_path):
+
+    if use_cache:
         print("Loading embeddings from cache...")
         embeddings_dict = load_embeddings_cache(cache_path)
     else:
@@ -325,12 +328,12 @@ def main():
     """Example of how to use the paper organizer"""
 
     root_folder = os.getenv("FOLDER_PATH")
-    new_paper_path = "doc\papers\Fine_Tune_LViT_for_zero_shot_classifiction[1].pdf"
+    new_paper = "1503.02531v1.pdf"
 
     # Organize the paper
     result_folder, embeddings_dict = classify(
         root_folder=root_folder,
-        new_paper_path=new_paper_path,
+        new_paper=new_paper,
         threshold=SIMILARITY_THRESHOLD,
         use_cache=False,
     )

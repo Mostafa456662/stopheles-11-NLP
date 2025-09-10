@@ -17,7 +17,10 @@ function_implementations = {
 available_functions = {
     "summarise_paper": {
         "description": "summarise a machine learning paper",
-        "parameters": {"paper_path": "string - path to the paper file", "folder_path":"path to the folder which contains the folders of papers to be classified into"},
+        "parameters": {
+            "new_paper": "string - name of the paper",
+            "folder_path": "path to the folder which contains the folders of papers to be classified into",
+        },
     },
     "explain": {
         "description": "Search for and explain a ML concept across papers",
@@ -99,7 +102,9 @@ def select_and_call_function(user_input: str) -> str:
             result = selected_function(query=parameters.get("query", ""))
         elif function_name == "classify":
             print("classify")
-            result = selected_function(new_paper_path=parameters.get("new_paper_path", ""))
+            result = selected_function(
+                new_paper_path=parameters.get("new_paper_path", "")
+            )
         else:
             result = selected_function(**parameters)
 
@@ -120,5 +125,5 @@ if __name__ == "__main__":
     for user_input in test_inputs:
         print(f"\nUser: {user_input}")
         result = select_and_call_function(user_input)
-        
+
         print("-" * 50)
