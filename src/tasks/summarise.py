@@ -1,7 +1,11 @@
 import re
-from pypdf import PdfReader
-from typing import List, Tuple
+from typing import List
 from gemma import generate
+from pypdf import PdfReader
+
+
+# local imports
+from functions import create_overlapping_chunks
 
 
 def extract_full_text(file_path: str) -> str:
@@ -18,62 +22,6 @@ def extract_full_text(file_path: str) -> str:
 def estimate_tokens(text: str) -> int:
     """Rough token estimation (1 token ≈ 4 characters for English)"""
     return len(text) // 4
-
-
-def create_overlapping_chunks(
-    text: str, chunk_size: int = 1800, overlap_size: int = 200
-) -> List[str]:
-    """
-    Split text into overlapping chunks
-
-    Args:
-        text: Input text to chunk
-        chunk_size: Size of each chunk in characters (leaving room for prompt)
-        overlap_size: Number of characters to overlap between chunks
-
-    Returns:
-        List of text chunks with overlaps
-    """
-    chunks = []
-    start = 0
-
-    while start < len(text):
-        # Define chunk end
-        end = start + chunk_size
-
-        # If this isn't the last chunk, try to break at sentence boundary
-        if end < len(text):
-            # Look for sentence endings in the last 200 characters
-            search_start = max(end - 200, start + chunk_size // 2)
-            sentence_end = -1
-
-            for i in range(end, search_start, -1):
-                if (
-                    text[i : i + 1] in ".!?"
-                    and i + 1 < len(text)
-                    and text[i + 1].isspace()
-                ):
-                    sentence_end = i + 1
-                    break
-
-            if sentence_end != -1:
-                end = sentence_end
-
-        # Extract chunk
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
-
-        # Move start position (with overlap)
-        if end >= len(text):
-            break
-        start = end - overlap_size
-
-        # Ensure we're making progress
-        if start <= len(chunks) * (chunk_size - overlap_size):
-            start = len(chunks) * (chunk_size - overlap_size)
-
-    return chunks
 
 
 def summarise_chunk(chunk: str, generate, chunk_index: int, total_chunks: int) -> str:

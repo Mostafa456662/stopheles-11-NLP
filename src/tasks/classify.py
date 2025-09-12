@@ -1,14 +1,16 @@
 import os
 import json
 import dotenv
-import ollama
 import shutil
-import pickle
 import numpy as np
 from pathlib import Path
 from pypdf import PdfReader
 from typing import Dict, List, Tuple, Any
 from sklearn.metrics.pairwise import cosine_similarity
+
+
+# Local imports
+from functions import extract_text, get_embedding_from_ollama
 
 dotenv.load_dotenv()
 
@@ -18,28 +20,6 @@ DBS_PATH = os.getenv("DBS_PATH")
 PAPERS_PATH = os.getenv("PAPERS_PATH")
 EMBEDDING_MODEL = "nomic-embed-text"
 SIMILARITY_THRESHOLD = float(os.getenv("SIMILARITY_THRESHOLD"))
-
-
-def extract_text(file_path: str, max_chars: int = 2048) -> str:
-    reader = PdfReader(file_path)
-    full_text = ""
-    for page in reader.pages:
-        text = page.extract_text()
-        if text:
-            full_text += text + " "
-            if len(full_text) >= max_chars:
-                break
-    return full_text
-
-
-def get_embedding_from_ollama(text, model=EMBEDDING_MODEL):
-    """Get embedding from Ollama"""
-    try:
-        response = ollama.embeddings(model=model, prompt=text)
-        return np.array(response["embedding"])
-    except Exception as e:
-        print(f"Error getting embedding from Ollama: {e}")
-        return None
 
 
 def get_paper_paths_by_folder(root_folder):
