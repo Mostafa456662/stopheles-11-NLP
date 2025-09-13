@@ -1,11 +1,10 @@
-import re
 from typing import List
-from gemma import generate
 from pypdf import PdfReader
 
 
 # local imports
-from functions import create_overlapping_chunks
+from tasks.gemma import generate
+from tasks.functions import create_overlapping_chunks
 
 
 def extract_full_text(file_path: str) -> str:
@@ -87,9 +86,10 @@ Summary:"""
 Text to summarise:
 {chunk}
 
-Summary:"""
+provide the summary and no additional text Summary:"""
+    result = generate(prompt=prompt, verbose=False)
 
-    return generate(prompt=prompt, verbose=False)
+    return result
 
 
 def combine_summaries(summaries: List[str], generate) -> str:
@@ -174,7 +174,7 @@ def summarise_paper(file_path: str, generate=generate) -> dict:
 
 def main():
     result = summarise_paper(
-        "doc/papers/CV/Fine_Tune_LViT_for_zero_shot_classifiction[1].pdf",
+        "doc\papers\CV\Fine_Tune_LViT_for_zero_shot_classifiction[1].pdf",
     )
 
     if "error" in result:

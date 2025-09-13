@@ -21,11 +21,12 @@ def generate(
     )
 
     response = ""
-    if verbose:
-        for chunk in stream:
-            content = chunk["message"]["content"]
+
+    for chunk in stream:
+        content = chunk["message"]["content"]
+        if verbose:
             print(content, end="", flush=True)
-            response += content
+        response += content
 
     print()
     return response

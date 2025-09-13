@@ -1,11 +1,13 @@
 import ollama
-from tasks.gemma import generate
-import os
 from dotenv import load_dotenv
-import json
+
+
+# local imports
+from router import route
+from tasks.gemma import generate
+
 
 load_dotenv()
-
 
 
 # Chat Loop
@@ -15,7 +17,7 @@ messages = []
 while True:
     user_input = input("You: ").strip()
     if user_input.lower() in ["quit", "exit", "bye"]:
-        print("👋 Goodbye!")
+        print("Goodbye!")
         break
     if not user_input:
         continue
@@ -24,9 +26,7 @@ while True:
 
     # Stream response from Ollama
     print("Assistant: ", end="", flush=True)
-    
-    response = generate(messages=messages, prompt=os.getenv("system_prompt"))
-    print()
+    response = route(user_input=messages)
 
     # Add model response to history
     messages.append({"role": "assistant", "content": response})

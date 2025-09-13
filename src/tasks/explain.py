@@ -1,5 +1,4 @@
 import os
-import json
 import dotenv
 import numpy as np
 from typing import List, Dict
@@ -8,8 +7,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 # Local imports
-from gemma import generate
-from functions import extract_text, get_embedding_from_ollama, create_overlapping_chunks
+from tasks.gemma import generate
+from tasks.functions import (
+    extract_text,
+    get_embedding_from_ollama,
+    create_overlapping_chunks,
+)
 
 
 dotenv.load_dotenv()
@@ -23,18 +26,15 @@ class ChunkIndex:
 
     def add_paper(self, paper_path: str, paper_title: str = None):
         """Add all chunks from a paper to the index"""
-        print(f"Indexing paper: {os.path.basename(paper_path)}")
 
         if not paper_title:
             paper_title = os.path.splitext(os.path.basename(paper_path))[0]
 
         full_text = extract_text(paper_path)
         if not full_text:
-            print(f"  No text extracted from {paper_path}")
             return
 
         chunks = create_overlapping_chunks(full_text)
-        print(f"  Created {len(chunks)} chunks")
 
         for i, chunk in enumerate(chunks):
             embedding = get_embedding_from_ollama(chunk)
@@ -49,10 +49,6 @@ class ChunkIndex:
                         "total_chunks": len(chunks),
                     }
                 )
-
-        print(
-            f"  Successfully indexed {len([m for m in self.metadata if m['paper_path'] == paper_path])} chunks"
-        )
 
     def search(
         self, query: str, top_papers: int = 5, chunks_per_paper: int = 3
@@ -99,7 +95,7 @@ class ChunkIndex:
                     "paper_path": paper_path,
                     "paper_title": chunks[0]["metadata"]["paper_title"],
                     "score": float(score),
-                    "chunks": chunks,  
+                    "chunks": chunks,
                 }
             )
 
@@ -123,7 +119,6 @@ class ChunkIndex:
                     }
                 )
 
-        print(f"Selected {len(selected_papers)} papers → {len(final_chunks)} chunks")
         return final_chunks
 
 
@@ -153,17 +148,14 @@ def explain_passage(query: str, passage: str):
 
 def explain(
     query: str,
-    papers_dir: str,
+    papers_dir: str = os.getenv("PAPERS_PATH"),
     top_papers: int = 5,
     chunks_per_paper: int = 3,
 ) -> str:
-    """Main function to query papers and return coherent passage from best-represented paper, if the passages 
-    appear to not be connected, separate them as different paragraphs."""
+    """Main function to query papers and return the explanation of found passages from the best-represented paper."""
 
     # Initialize index
     index = ChunkIndex()
-
-    print("Building index...")
 
     # Index all papers recursively
     for root, dirs, files in os.walk(papers_dir):
@@ -175,16 +167,12 @@ def explain(
     if not index.chunks:
         return "No papers found or indexed."
 
-    print(f"\nSearching {len(index.chunks)} chunks for: {query}")
-
     search_results = index.search(
         query, top_papers=top_papers, chunks_per_paper=chunks_per_paper
     )
 
     if not search_results:
         return "No relevant information found."
-
-    print(f"Retrieved {len(search_results)} chunks from top papers")
 
     # Group by paper
     paper_groups = defaultdict(list)
@@ -197,9 +185,7 @@ def explain(
     best_paper_chunks = paper_groups[best_paper_path]
     paper_title = best_paper_chunks[0]["metadata"]["paper_title"]
 
-    print(
-        f"Best represented paper: {paper_title} ({len(best_paper_chunks)} chunks retrieved)"
-    )
+    print(f"Paper: {paper_title}")
 
     # Construct coherent passage using LLM
     passage = construct_passage(best_paper_chunks, paper_title)
@@ -212,7 +198,6 @@ def explain(
 def main():
     """Example usage"""
     papers_folder = os.getenv("PAPERS_PATH")
-    print(papers_folder)
 
     query = """Can you explain this passage,  Model Variants. We base ViT configurations on those used for BERT (Devlin et al., 2019), as
  summarized in Table 1. The “Base” and “Large” models are directly adopted from BERT and we

@@ -10,7 +10,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 # Local imports
-from functions import extract_text, get_embedding_from_ollama
+from tasks.functions import extract_text, get_embedding_from_ollama
 
 dotenv.load_dotenv()
 
@@ -275,7 +275,7 @@ def classify(
     """Main function to organize papers"""
     cache_path = os.path.join(DBS_PATH, "embeddings_cache")
 
-    new_paper_path = PAPERS_PATH + new_paper
+    new_paper_path = new_paper
     # Load or create embeddings dictionary
 
     if use_cache:
