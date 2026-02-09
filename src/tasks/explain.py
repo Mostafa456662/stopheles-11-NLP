@@ -138,12 +138,14 @@ and no additional text
 
 Create a coherent passage:"""
 
-    return generate(prompt=prompt)
+    return generate(prompt=prompt, verbose=False)
 
 
 def explain_passage(query: str, passage: str):
     prompt = f"""your job is to explain this passage: {passage} according to this query {query} provide the explanation only"""
-    return generate(prompt=prompt)
+    return generate(
+        prompt=prompt,
+    )
 
 
 def explain(

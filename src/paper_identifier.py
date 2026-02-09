@@ -16,6 +16,9 @@ def extract_text(file_path: str) -> str:
     """Extract complete text from PDF"""
     reader = PdfReader(file_path)
     text = reader.pages[0].extract_text()
+    if len(text) > 200:
+        text = text[:200]
+    text = "Paper Name" + os.path.basename(file_path) + text
     return text.strip()
 
 
@@ -130,7 +133,7 @@ def identify_paper(
 
 if __name__ == "__main__":
     # Example usage
-    paper_to_find = "segment anything model"
+    paper_to_find = "explain the fine tune lvit paper"
     result = identify_paper(paper_to_find, verbose=True)[0]
 
     if result:

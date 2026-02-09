@@ -1,3 +1,4 @@
+import re
 import json
 from typing import Dict, Any
 from tasks.gemma import generate
@@ -5,6 +6,14 @@ from tasks.explain import explain
 from tasks.classify import classify
 from tasks.summarise import summarise_paper
 from paper_identifier import identify_paper
+
+
+def extract_number(text):
+    match = re.search(r"[-+]?\d*\.?\d+", text)
+    if match:
+        return float(match.group())
+    return None
+
 
 function_implementations = {
     "summarise_paper": summarise_paper,
@@ -57,8 +66,8 @@ def get_confidence(user_input, functions_desc):
 
     USER REQUEST: "{user_input}"""
 
-    confidence_score = float(generate(prompt=prompt))
-    
+    confidence_score = float(extract_number(generate(prompt=prompt)))
+
     return confidence_score
 
 
@@ -157,6 +166,6 @@ def route(user_input, messages=""):
 
 
 if __name__ == "__main__":
-    user_input = "hi"
+    user_input = "explain the fine tune lvit paper"
 
     route(user_input=user_input)
