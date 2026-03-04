@@ -112,7 +112,7 @@ Create a `.env` file in the project root:
 FOLDER_PATH=/path/to/your/organized/paper/folders
 PAPERS_PATH=/path/to/all/papers
 DBS_PATH=/path/to/store/embedding/cache
-SIMILARITY_THRESHOLD=0.75
+SIMILARITY_THRESHOLD=0.6
 ```
 
 | Variable | Description |
