@@ -1,2 +1,4 @@
 .venv
 .env
+src/tasks/__pycache__/
+src\tempCodeRunnerFile.py
