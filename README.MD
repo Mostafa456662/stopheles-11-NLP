@@ -148,25 +148,7 @@ Assistant: [answers directly without calling a function]
 
 Type `quit`, `exit`, or `bye` to stop.
 
----
 
-## 📁 Project Structure
-
-```
-├── main.py                     # Chat loop entry point
-├── router.py                   # Confidence scoring + function routing
-├── paper_identifier.py         # Fuzzy paper lookup via embeddings
-├── tasks/
-│   ├── gemma.py                # Ollama generate() wrapper (gemma3:4b, streaming)
-│   ├── functions.py            # Shared utils: extract_text, get_embedding, chunking
-│   ├── summarise.py            # Chunked summarization pipeline
-│   ├── explain.py              # ChunkIndex, semantic search, passage explanation
-│   └── classify.py             # Folder-based paper classification + cache
-├── .env                        # Environment variables (not committed)
-└── requirements.txt
-```
-
----
 
 ## ⚙️ Key Configuration
 
